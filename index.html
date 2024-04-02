@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title class="btc-price-title">00,000 $ HODL.Bar: Real-Time Bitcoin Ticker Prices on Your Device </title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@1,900&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <!-- 1680 × 1264 -->
+    <style>
+        html {
+            margin: 0;
+            padding: 0;
+            font-size: 6px;
+        }
+
+        body {
+            margin: auto;
+            padding: 0;
+            font-family: "Source Code Pro", monospace;
+            font-style: italic;
+            width: 122rem;
+        }
+
+        .rotate .main {
+            -webkit-transform-origin: left top;
+        }
+
+        header {
+            padding: 5.5rem 0 7rem;
+            font-size: 9.6rem;
+        }
+
+        .rotate header {
+            padding: 0.8rem 0 12rem;
+        }
+
+        header::after {
+            content: "";
+            clear: both;
+        }
+
+        .btc-percent {
+            font-size: 1em;
+            display: inline-block;
+            letter-spacing: -0.3rem;
+            float: left;
+            border: solid 0.7rem;
+            border-radius: 10rem;
+            padding: 1px 3rem 0.8rem 1.8rem;
+            margin: 1.2rem 0;
+            line-height: 0.8;
+        }
+
+        .btc-percent::after {
+            content: "%";
+            margin-left: 2.2rem;
+            opacity: 0.4;
+        }
+
+        .btc-high,
+        .btc-low {
+            float: right;
+            letter-spacing: -0.5rem;
+            font-size: 0.91em;
+            opacity: 0.4;
+        }
+
+        .btc-high i,
+        .btc-low i {
+            font-size: 0.7em;
+            margin-left: -0.3rem;
+        }
+
+        .btc-high {
+            margin-left: 4.4rem;
+        }
+
+        .btc-indicator {
+            margin: 0;
+            margin-left: 0.8rem;
+            margin-top: -1rem;
+            font-family: sans-serif;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 1.2em;
+            float: left;
+        }
+
+        .btc {
+            position: relative;
+            margin: 16rem auto;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .rotate .btc {
+            margin: 3rem auto;
+        }
+
+        .btc-price {
+            margin: 0 -4rem;
+            font-size: 36rem;
+            letter-spacing: -2.01rem;
+            line-height: 0.79;
+            cursor: pointer;
+        }
+
+        .btc-price i {
+            font-size: 21rem;
+            margin-left: -1.2rem;
+            letter-spacing: -3.2rem;
+            opacity: 0.45;
+        }
+
+        .btc-decimal {
+            position: absolute;
+            right: 0;
+            bottom: -6rem;
+            font-size: 6.2rem;
+            opacity: 0.4;
+            line-height: 0;
+            z-index: 2;
+            letter-spacing: -0.3rem;
+        }
+
+        .rotate {
+            bottom: -7.6rem;
+        }
+
+        /* .btc-indicator {
+        position: absolute;
+        top: -3rem;
+        left: 2rem;
+        font-size: 8rem;
+        opacity: 0.25;
+      } */
+        .btc-chart {
+            height: 42rem;
+            width: 100%;
+            position: relative;
+            margin: 5rem 0 8rem;
+        }
+
+        .rotate .btc-chart {
+            height: 30rem;
+            margin: 5.6rem 0 4.6rem;
+        }
+
+        .btc-chart button {
+            position: absolute;
+            width: 7.4rem;
+            height: 7.4rem;
+            z-index: 2;
+            left: 0;
+            bottom: 7rem;
+            border-radius: 7rem;
+            background: transparent;
+            border: solid 0.7rem currentColor;
+            font-size: 4rem;
+            font-style: italic;
+            font-family: "Source Code Pro", monospace;
+            opacity: 0.4;
+            letter-spacing: 0.2rem;
+            cursor: pointer;
+            padding: 0.1rem;
+        }
+
+        .currency-picker {
+            position: absolute;
+            z-index: 2;
+            left: 0;
+            bottom: -0.5rem;
+            border-radius: 1.05rem;
+            font-size: 2.56rem;
+            font-weight: bold;
+            border: solid 0.4rem;
+            padding: 0.35rem 0.55rem;
+            background: transparent;
+            opacity: 0.4;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .currency-picker option {
+            padding: 0;
+            font-size: 15px;
+            /*was 5px*/
+
+        }
+
+        .rotate .btc-chart button {
+            display: none;
+        }
+
+        .btc-chart-image {
+            position: absolute;
+            top: 0;
+            right: 3.3%;
+            left: 0;
+            bottom: 0;
+            width: 96.7%;
+            height: 100%;
+        }
+
+        .table {
+            width: 100%;
+            font-size: 7.2rem;
+            table-layout: fixed;
+        }
+
+        .rotat .table {
+            font-size: 6.6rem;
+        }
+
+        .table td {
+            width: 33%;
+            text-align: left;
+            line-height: 1;
+            letter-spacing: -0.3rem;
+            position: relative;
+            padding: 3rem 0 6rem;
+        }
+
+        .table td:nth-child(1) {
+            width: 40%;
+        }
+
+        .table td:nth-child(2) {
+            width: 36%;
+        }
+
+        .table td:nth-child(3) {
+            width: 24%;
+        }
+
+        .rotate .table td {
+            padding: 2.2rem 0;
+        }
+
+        .table td i {
+            font-size: 0.8em;
+        }
+
+        .table td h6 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            font-size: 2.6rem;
+            letter-spacing: 0;
+            opacity: 0.4;
+        }
+
+        .table tr:last-child td {
+            padding-bottom: 0;
+        }
+
+        .table .volume::after,
+        .table .market-cap::after,
+        .table .transaction::after {
+            opacity: 0.4;
+            font-size: 0.5em;
+            margin-left: 0.8rem;
+        }
+
+        .table .volume::after {
+            content: "BTC";
+        }
+
+        .table .market-cap::after {
+            content: "T";
+        }
+
+        .table .transaction::after {
+            content: attr(data-unit);
+        }
+
+        .dialog-bg {
+            display: none;
+            font-family: serif;
+            font-style: normal;
+        }
+
+        .dialog .dialog-bg {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+
+        .dialog .dialog-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            background: white;
+            width: 110rem;
+            height: 108rem;
+            border: solid 0.4rem currentColor;
+            border-radius: 5rem;
+            padding: 4rem;
+            overflow-y: hidden;
+        }
+
+        .rotate.dialog .dialog-content {
+            width: 96rem;
+            height: 94rem;
+            -webkit-transform: scale(0.96);
+        }
+
+        .dialog-content h3 button {
+            float: right;
+            background: transparent;
+            font-size: 1.5em;
+            font-style: italic;
+            letter-spacing: 0.5rem;
+            border: none;
+            padding: 0 1rem;
+            font-style: normal;
+            margin: -1rem;
+            cursor: pointer;
+        }
+
+        .dialog-content h3 {
+            margin: 0;
+            font-size: 5.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dialog-content h5 {
+            font-size: 3.6rem;
+            margin: 2.6rem 0 1.2rem;
+            font-weight: bold;
+        }
+
+        .dialog-content p {
+            font-size: 3.4rem;
+            margin: 1rem;
+        }
+
+        .dialog-content ul,
+        .dialog-content ol {
+            font-size: 3.4rem;
+            margin: 1rem;
+            padding-left: 2.6rem;
+        }
+
+        .dialog-content li {
+            margin: 1rem 0;
+        }
+
+        .dialog-content b {
+            letter-spacing: 0.3rem;
+        }
+
+        .dialog-content .btc-address {
+            font-size: 3rem;
+            text-align: center;
+            width: 20rem;
+            min-width: 20rem;
+            height: 20rem;
+            max-height: 20rem;
+            max-width: 20rem;
+            padding: 0;
+            line-height: 0;
+            float: right;
+            margin: 2.6rem 1.7rem 0;
+            font-weight: bold;
+        }
+
+        .dialog-content .btc-address img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 3rem;
+        }
+
+        @media (orientation: portrait) {
+            html {
+                font-size: 0.74vw;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(calc(-50vh - 50vw)) scale(1.14);
+            }
+        }
+
+        @media (orientation: landscape) {
+            html {
+                font-size: 0.65vh;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-96vh) scale(1.14);
+            }
+        }
+
+        /* @media screen and (min-width: 1200px) {
+        html.kindle {
+          font-size: 9.4px;
+        }
+      }
+
+      @media screen and (max-width: 800px) {
+        html {
+          font-size: 0.74vw;
+        }
+      } */
+
+        @media (width: 1264px) {
+            html {
+                font-size: 9.6px;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-119.5%) scale(1.16);
+            }
+        }
+
+        @media (width: 800px) {
+            html {
+                font-size: 6.1px;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-121%) scale(1.16);
+            }
+        }
+
+        @media (width: 758px) {
+            html {
+                font-size: 5.7px;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-121%) scale(1.16);
+            }
+        }
+
+        @media (width: 768px) {
+            html {
+                font-size: 5.9px;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-121%) scale(1.16);
+            }
+        }
+
+        @media (width: 1072px) {
+            html {
+                font-size: 8.1px;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-122%) scale(1.16);
+            }
+        }
+
+        @media (width: 600px) {
+            html {
+                font-size: 4.7px;
+            }
+
+            .rotate .main {
+                -webkit-transform: rotate(-90deg) translateX(-119.5%) scale(1.14);
+            }
+        }
+
+        @media screen and (max-width: 599px) and (orientation: portrait) {
+            html {
+                font-size: 0.78vw;
+            }
+
+            .btc {
+                margin: 20rem auto;
+            }
+
+            .btc-chart {
+                margin: 18rem 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="main">
+        <header>
+            <div class="btc-percent">+0.00</div>
+            <div class="btc-high">00,000</div>
+            <div class="btc-low">00,000</div>
+            <div class="btc-indicator"></div>
+        </header>
+        <div class="btc">
+            <h1 class="btc-price" onclick="rotate()">00<i>,</i>000</h1>
+            <h2 class="btc-decimal"></h2>
+        </div>
+        <div class="btc-chart">
+            <img class="btc-chart-image" />
+            <button onclick="openDialog()">i</button>
+            <select class="currency-picker" onchange="onSelectChange()">
+                <option value="USD" selected>USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="CAD">CAD</option>
+                <option value="AUD">AUD</option>
+                <option value="CNY">CNY</option>
+                <option value="CHF">CHF</option>
+                <option value="NZD">NZD</option>
+                <option value="AED">AED</option>
+                <option value="TND">TND</option>
+                <option value="DZD">DZD</option>
+                <option value="MAD">MAD</option>
+            </select>
+        </div>
+        <table class="table">
+            <tr>
+                <td>
+                    <h6>Sats per <span class="currency-unit">USD</span></h6>
+                    <span class="sats-per-dollar">0<i>,</i>000.00</span>
+                </td>
+                <td>
+                    <h6>Block Height</h6>
+                    <span class="block-height">000<i>,</i>000</span>
+                </td>
+                <td>
+                    <h6>Market Cap</h6>
+                    <span class="market-cap">0.000</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h6>BTC ⇄ <span class="other-currency-unit">EUR</span></h6>
+                    <span class="btc-other">00<i>,</i>000.00</span>
+                </td>
+                <td>
+                    <h6>24h Volume</h6>
+                    <span class="volume">00<i>,</i>000</span>
+                </td>
+                <td>
+                    <h6>Transaction Fee</h6>
+                    <span class="transaction" data-unit="USD">00.00</span>
+                </td>
+            </tr>
+        </table>
+        <section class="dialog-bg" onclick="closeDialog()">
+            <div class="dialog-content" onclick="event.stopPropagation()">
+                <h3>Kindle BTC Ticker<button onclick="closeDialog()">X</button></h3>
+                <h5>Setup</h5>
+                <ol>
+                    <li>Tap on bitcoin price to toggle to landscape mode</li>
+                    <li>
+                        Enter <b>~ds</b> to the address bar to disable screensaver. Hold power
+                        button to reboot Kindle if you want the screensaver back.
+                    </li>
+                </ol>
+                <h5>About</h5>
+                <p>
+                    This ticker is inspired by
+                    <a href="https://github.com/vladc/btc-ticker" target="_blank" rel="noopener noreferrer">vladc </a>.
+                    I wanted a prettier Ticker for my kindle that I could use in landscape, and
+                    here we are! I wanted a prettier Ticker for my kindle that I could use in landscape, original work
+                    from Abbas Monfared!
+                </p>
+                <h5>Data Info</h5>
+                <p>
+                    The Bitcoin price is from
+                    <a href="https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md" target="_blank"
+                        rel="noopener noreferrer">Binance</a>, the exchange rates are from
+                    <a href="https://exchangerate.host/" target="_blank"
+                        rel="noopener noreferrer">exchangerate.host</a>, the chart is from
+                    <a href="https://www.coingecko.com/en/api" target="_blank" rel="noopener noreferrer">Coingecko</a>
+                    and the Blockchain data is from
+                    <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer">mempool.space</a>.
+                </p>
+
+                <h5>Donation</h5>
+                <p>
+                    More features coming! Please consider supporting me for more customizations
+                    and device supports.
+                </p>
+                <br />
+                <h5>hodl.bar</h5>
+                <div style="clear: right"></div>
+            </div>
+        </section>
+    </section>
+
+    <script>
+        var RATES = {},
+            FEES,
+            MINED_COINS,
+            BLOCK_HEIGHT,
+            btcPriceEl = document.querySelector(".btc-price"),
+            btcPriceElonTitle = document.querySelector(".btc-price-title"),
+            btcDecimalEl = document.querySelector(".btc-decimal"),
+            btcHigh = document.querySelector(".btc-high"),
+            btcLow = document.querySelector(".btc-low"),
+            btcPercent = document.querySelector(".btc-percent"),
+            btcIndicator = document.querySelector(".btc-indicator"),
+            btcChartLoader = document.querySelector(".btc-chart-image"),
+            satsPerDollar = document.querySelector(".sats-per-dollar"),
+            volume = document.querySelector(".volume"),
+            volumeValue,
+            btcOtherPrice = document.querySelector(".btc-other"),
+            blockHeight = document.querySelector(".block-height"),
+            marketCap = document.querySelector(".market-cap"),
+            transaction = document.querySelector(".transaction"),
+            currencyPicker = document.querySelector(".currency-picker"),
+            lastPrice,
+            currencyList = "USD,EUR,CHF,AUD,CAD,CNY,GBP,NZD,AED,TND,DZD,MAD"
+        onMin = 60 * 1000,
+            oneHour = 60 * onMin,
+            trillion = 1000000000000,
+            satsPerBTC = 100000000;
+
+        // Get window hash "full" and rotate if exist
+        var urlHash = getUrlHash();
+        if (urlHash) {
+            var hashes = urlHash.split("-");
+            var orient = hashes[0];
+            var cur = hashes[1];
+            if (orient === "full") {
+                rotate(true);
+            }
+            if (cur && currencyList.indexOf(cur) > -1) {
+                currencyPicker.value = cur;
+                applyCurrencyChange();
+            }
+        }
+        // if (hash.indexOf()) {
+        // }
+
+        function ajax(url, callback) {
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function () {
+                if (req.readyState == 4 && req.status == 200) {
+                    callback(JSON.parse(req.responseText));
+                }
+            };
+            req.open("GET", url, true);
+            req.send();
+        }
+
+        function getData() {
+            ajax("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT", function (res) {
+                if (!res || !res.askPrice) return;
+                if (RATES && RATES[currencyPicker.value]) {
+                    var rate = RATES[currencyPicker.value];
+                    // Rest of your code that uses 'rate'
+                } else {
+                    var rate = 1;
+                }
+                // var rate = RATES[currencyPicker.value] || 1;
+                var rawPrice = +res.askPrice;
+                var price = rawPrice * rate;
+                var askPrice = price.toFixed(2);
+
+                var satPer$ = (1 / price) * satsPerBTC;
+
+                var prices = askPrice.toString().split(".");
+                btcDecimalEl.innerHTML = "." + prices[1];
+                btcPriceEl.innerHTML = addComma(prices[0]);
+                btcPriceElonTitle.innerHTML = addPhrase(addCommaOnTitle(prices[0]), currencyPicker.value, btcIndicator);
+                satsPerDollar.innerHTML = addComma(satPer$.toFixed(2));
+
+                if (volumeValue !== res.volume) {
+                    volumeValue = res.volume;
+                    volume.innerHTML = addComma(parseInt(res.volume, 10));
+                }
+
+                // if (btcHighValue !== res.highPrice) {
+                //   btcHighValue = res.highPrice;
+                btcHigh.innerHTML = addComma(parseInt(+res.highPrice * rate, 10));
+                // }
+                //
+                // if (btcLowValue !== res.lowPrice) {
+                //   btcLowValue = res.lowPrice;
+                btcLow.innerHTML = addComma(parseInt(+res.lowPrice * rate, 10));
+                // }
+
+                btcPercent.innerHTML =
+                    (+res.priceChangePercent > 0 ? "+" : "") +
+                    (+res.priceChangePercent).toFixed(2);
+
+                /*    if (RATES.CAD) {
+                      var otherPrice =
+                        currencyPicker.value === "USD" ? RATES.CAD * rawPrice : rawPrice;
+                      btcOtherPrice.innerHTML = addComma(otherPrice.toFixed(2));
+                    } */
+
+                if (RATES && RATES.CAD) {
+                    var otherPrice = currencyPicker.value === "USD" ? RATES.CAD * rawPrice : rawPrice;
+                    btcOtherPrice.innerHTML = addComma(otherPrice.toFixed(2));
+                }
+                /*  if (RATES.EUR) {
+                    var otherPrice =
+                      currencyPicker.value === "USD" ? RATES.EUR * rawPrice : rawPrice;
+                    btcOtherPrice.innerHTML = addComma(otherPrice.toFixed(2));
+                  } */
+
+                if (RATES && RATES.EUR) {
+                    var otherPrice = currencyPicker.value === "USD" ? RATES.EUR * rawPrice : rawPrice;
+                    btcOtherPrice.innerHTML = addComma(otherPrice.toFixed(2));
+                }
+                if (FEES) {
+                    transaction.innerHTML = (
+                        ((FEES.fastestFee * 140) / satsPerBTC) *
+                        price
+                    ).toFixed(2);
+                }
+
+                if (BLOCK_HEIGHT) {
+                    marketCap.innerHTML = ((MINED_COINS * price) / trillion).toFixed(3);
+                }
+
+                // Update arrow
+                if (askPrice > lastPrice) {
+                    btcIndicator.innerHTML = "↑";
+                } else if (askPrice < lastPrice) {
+                    btcIndicator.innerHTML = "↓";
+                }
+                lastPrice = askPrice;
+
+                // test
+                delete res;
+            });
+        }
+
+        function getExchangeRates() {
+            ajax(
+                "https://api.frankfurter.app/latest?from=USD&to=" + currencyList,
+                function (res) {
+                    RATES = res.rates;
+                }
+            );
+        }
+
+        function addComma(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "<i>,</i>");
+        }
+        function addCommaOnTitle(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        function addPhrase(price, picker, btcIndicator) {
+            return btcIndicator.innerHTML + " " + price + " " + picker + " HODL.Bar: Real-Time Bitcoin Ticker Prices on Your Device ";
+        }
+        function applyaddPhrase() {
+            return btcPriceElonTitle.innerHTML = addPhrase(addCommaOnTitle(prices[0]), currencyPicker.value, btcIndicator);
+        }
+
+        function getBlockChain() {
+            ajax("https://mempool.space/api/blocks/tip/height", function (res) {
+                if (BLOCK_HEIGHT !== res) {
+                    BLOCK_HEIGHT = res;
+                    blockHeight.innerHTML = addComma(BLOCK_HEIGHT);
+                    MINED_COINS = calculateCoins(BLOCK_HEIGHT);
+                }
+            });
+            ajax("https://mempool.space/api/v1/fees/recommended", function (res) {
+                FEES = res;
+            });
+        }
+
+        function getChart() {
+            const hourNumber = Math.round(new Date().getTime() / 60000);
+            btcChartLoader.src =
+                "https://www.coingecko.com/coins/1/sparkline.svg";
+        }
+
+        function calculateCoins(blockHeight) {
+            var minedCoins = 0;
+            var rewardStart = 50;
+            var halvBlocks = 210000;
+            var remaining = blockHeight % halvBlocks;
+            var halvs = parseInt(blockHeight / halvBlocks, 10);
+            for (var index = 0; index < halvs; index++) {
+                minedCoins = minedCoins + halvBlocks * rewardStart;
+                rewardStart = rewardStart / 2;
+            }
+            return minedCoins + remaining * rewardStart;
+        }
+
+        function getUrlHash() {
+            return window.location.href.split("#")[1];
+        }
+
+        function rotate(skip) {
+            document.documentElement.classList.toggle("rotate");
+            if (!skip) {
+                applyUrlHash();
+            }
+        }
+
+        function applyUrlHash() {
+            if (document.documentElement.classList.toString().indexOf("rotate") > -1) {
+                location.hash = "#full-" + currencyPicker.value;
+            } else {
+                location.hash = "#-" + currencyPicker.value;
+            }
+        }
+
+        function openDialog() {
+            document.documentElement.classList.add("dialog");
+        }
+
+        function closeDialog() {
+            document.documentElement.classList.remove("dialog");
+        }
+
+        function applyCurrencyChange() {
+            document.querySelector(".currency-unit").innerHTML = currencyPicker.value;
+            document.querySelector(".other-currency-unit").innerHTML =
+                currencyPicker.value === "USD" ? "EUR" : "USD";
+            transaction.dataset.unit = currencyPicker.value;
+            getData();
+        }
+
+        function onSelectChange() {
+            applyCurrencyChange();
+            applyUrlHash();
+            applyaddPhrase();
+        }
+
+        // Hack, Kindle browser crashes after 2-5 min
+        // Weird hack!
+        if (navigator.userAgent.indexOf("X11; ; U; Linux armv7l") > 0) {
+            setInterval(getData, 10000);
+            setTimeout(function () {
+                location.reload();
+            }, onMin * 3); //
+        } else {
+            setInterval(getData, 1000);
+        }
+        setInterval(getChart, oneHour);
+        setInterval(getBlockChain, onMin * 30);
+        setInterval(getExchangeRates, oneHour * 2);
+
+        getExchangeRates();
+        getBlockChain();
+        getData();
+        getChart();
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XDBPK3PSG6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-XDBPK3PSG6');
+    </script>
+</body>
+
+</html>
